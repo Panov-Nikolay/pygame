@@ -29,19 +29,29 @@ def load_image(name, colorkey=None):
 
 class Ship(pygame.sprite.Sprite):
     image = load_image('spaceship.png')
-    ship_image = pygame.transform.scale(image, (150, 100))
+    ship_image = pygame.transform.scale(image, (125, 100))
 
     def __init__(self, group):
         super().__init__(group)
         self.image = Ship.ship_image
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = 0, 700
+        self.mask = pygame.mask.from_surface(self.ship_image)
+        self.hp = 100
 
     def update(self):
-        if pygame.sprite.spritecollideany(self, meteor_group):
+        meteor = pygame.sprite.spritecollideany(self, meteor_group)
+        if meteor:
+            if pygame.sprite.collide_mask(self, meteor):
+                meteor.kill()
+                self.take_damage()
+        if self.hp <= 0:
             self.kill()
             return True
         return False
+    
+    def take_damage(self):
+        self.hp -= random.choice([5, 10, 15])
 
 
 class Bullet(pygame.sprite.Sprite):
@@ -53,27 +63,40 @@ class Bullet(pygame.sprite.Sprite):
         super().__init__(*group)
         self.image = Bullet.bullet_image
         self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.bullet_image)
         self.rect.x, self.rect.y = x, 650
 
     def update(self):
         self.rect.y -= V / FPS
-        if pygame.sprite.spritecollideany(self, meteor_group):
-            self.kill()
-        pygame.sprite.spritecollide(self, meteor_group, True)
- 
+        meteor = pygame.sprite.spritecollideany(self, meteor_group)
+        if meteor:
+            if pygame.sprite.collide_mask(self, meteor):
+                self.kill()
+                meteor.kill()
+        
 
 class Meteor(pygame.sprite.Sprite):
-    image = load_image('asteroid.jpg')
+    image = load_image('asteroid.png')
     meteor_image = pygame.transform.scale(image, (80, 80))
 
     def __init__(self, *group):
         super().__init__(*group)
         self.image = Meteor.meteor_image
         self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.meteor_image)
         self.rect.x, self.rect.y = random.randrange(720), 0
 
     def update(self):
         self.rect.y += V / FPS / 2
+
+
+class Heath:
+    def __init__(self):
+        self.font = pygame.font.Font(None, 30)
+        
+    def update(self, ship_hp):
+        text = self.font.render(f'Hp {ship_hp}', True, (100, 255, 100))
+        return text
 
 
 if __name__ == '__main__':
@@ -84,6 +107,7 @@ if __name__ == '__main__':
     meteor_group = pygame.sprite.Group()
     bullet_group = pygame.sprite.Group()
     ship = Ship(all_sprites)
+    hp_indicator = Heath()
     new_meteor = 0
     while running:
         screen.fill((0, 0, 0))
@@ -96,8 +120,8 @@ if __name__ == '__main__':
                 elif event.key == pygame.K_RIGHT:
                     direction = 1
                 if event.key == pygame.K_SPACE:
-                    Bullet((bullet_group, all_sprites), x=ship.rect.x + 75)
-        if 0 <= ship.rect.x + V / FPS * direction <= 650:
+                    Bullet((bullet_group, all_sprites), x=ship.rect.x + 25)
+        if 0 <= ship.rect.x + V / FPS * direction <= width - ship.rect.width:
             ship.rect.x += V / FPS * direction
         new_meteor += 1
         if new_meteor == 60:
@@ -106,7 +130,10 @@ if __name__ == '__main__':
         bullet_group.update()
         meteor_group.update()
         if ship.update():
+            screen.blit(hp_indicator.update(0), (0, 0))
             running = False
+        else:
+            screen.blit(hp_indicator.update(ship.hp), (0, 0))
         all_sprites.draw(screen)
         clock.tick(FPS)
         pygame.display.flip()

@@ -7,6 +7,7 @@ import sys
 pygame.init()
 size = width, height = 800, 800
 screen = pygame.display.set_mode(size)
+screen_rect = (0, 0, width, height)
 V = 300
 FPS = 60
 
@@ -73,6 +74,8 @@ class Bullet(pygame.sprite.Sprite):
             if pygame.sprite.collide_mask(self, meteor):
                 self.kill()
                 meteor.kill()
+        if not self.rect.colliderect(screen_rect):
+            self.kill()
         
 
 class Meteor(pygame.sprite.Sprite):
@@ -88,6 +91,8 @@ class Meteor(pygame.sprite.Sprite):
 
     def update(self):
         self.rect.y += V / FPS / 2
+        if not self.rect.colliderect(screen_rect):
+            self.kill()
 
 
 class Heath:
@@ -109,8 +114,9 @@ if __name__ == '__main__':
     ship = Ship(all_sprites)
     hp_indicator = Heath()
     new_meteor = 0
+    bg = load_image('background.jpg')
     while running:
-        screen.fill((0, 0, 0))
+        screen.blit(bg, (0, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False

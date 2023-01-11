@@ -27,85 +27,83 @@ def load_image(name, colorkey=None):
         image = image.convert_alpha()
     return image
 
+def main_level():
+    class Ship(pygame.sprite.Sprite):
+        image = load_image('spaceship.png')
+        ship_image = pygame.transform.scale(image, (125, 100))
 
-class Ship(pygame.sprite.Sprite):
-    image = load_image('spaceship.png')
-    ship_image = pygame.transform.scale(image, (125, 100))
+        def __init__(self, group):
+            super().__init__(group)
+            self.image = Ship.ship_image
+            self.rect = self.image.get_rect()
+            self.rect.x, self.rect.y = 0, 700
+            self.mask = pygame.mask.from_surface(self.ship_image)
+            self.hp = 100
 
-    def __init__(self, group):
-        super().__init__(group)
-        self.image = Ship.ship_image
-        self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = 0, 700
-        self.mask = pygame.mask.from_surface(self.ship_image)
-        self.hp = 100
-
-    def update(self):
-        meteor = pygame.sprite.spritecollideany(self, meteor_group)
-        if meteor:
-            if pygame.sprite.collide_mask(self, meteor):
-                meteor.kill()
-                self.take_damage()
-        if self.hp <= 0:
-            self.kill()
-            return True
-        return False
-    
-    def take_damage(self):
-        self.hp -= random.choice([5, 10, 15])
-
-
-class Bullet(pygame.sprite.Sprite):
-    image = load_image('bullet.png')
-    bullet_image = pygame.transform.scale(image, (75, 75))
-    bullet_image = pygame.transform.rotate(bullet_image, 90)
-
-    def __init__(self, *group, x):
-        super().__init__(*group)
-        self.image = Bullet.bullet_image
-        self.rect = self.image.get_rect()
-        self.mask = pygame.mask.from_surface(self.bullet_image)
-        self.rect.x, self.rect.y = x, 650
-
-    def update(self):
-        self.rect.y -= V / FPS
-        meteor = pygame.sprite.spritecollideany(self, meteor_group)
-        if meteor:
-            if pygame.sprite.collide_mask(self, meteor):
+        def update(self):
+            meteor = pygame.sprite.spritecollideany(self, meteor_group)
+            if meteor:
+                if pygame.sprite.collide_mask(self, meteor):
+                    meteor.kill()
+                    self.take_damage()
+            if self.hp <= 0:
                 self.kill()
-                meteor.kill()
-        if not self.rect.colliderect(screen_rect):
-            self.kill()
+                return True
+            return False
         
-
-class Meteor(pygame.sprite.Sprite):
-    image = load_image('asteroid.png')
-    meteor_image = pygame.transform.scale(image, (80, 80))
-
-    def __init__(self, *group):
-        super().__init__(*group)
-        self.image = Meteor.meteor_image
-        self.rect = self.image.get_rect()
-        self.mask = pygame.mask.from_surface(self.meteor_image)
-        self.rect.x, self.rect.y = random.randrange(720), 0
-
-    def update(self):
-        self.rect.y += V / FPS / 2
-        if not self.rect.colliderect(screen_rect):
-            self.kill()
+        def take_damage(self):
+            self.hp -= random.choice([5, 10, 15])
 
 
-class Heath:
-    def __init__(self):
-        self.font = pygame.font.Font(None, 30)
-        
-    def update(self, ship_hp):
-        text = self.font.render(f'Hp {ship_hp}', True, (100, 255, 100))
-        return text
+    class Bullet(pygame.sprite.Sprite):
+        image = load_image('bullet.png')
+        bullet_image = pygame.transform.scale(image, (75, 75))
+        bullet_image = pygame.transform.rotate(bullet_image, 90)
+
+        def __init__(self, *group, x):
+            super().__init__(*group)
+            self.image = Bullet.bullet_image
+            self.rect = self.image.get_rect()
+            self.mask = pygame.mask.from_surface(self.bullet_image)
+            self.rect.x, self.rect.y = x, 650
+
+        def update(self):
+            self.rect.y -= V / FPS
+            meteor = pygame.sprite.spritecollideany(self, meteor_group)
+            if meteor:
+                if pygame.sprite.collide_mask(self, meteor):
+                    self.kill()
+                    meteor.kill()
+            if not self.rect.colliderect(screen_rect):
+                self.kill()
+            
+
+    class Meteor(pygame.sprite.Sprite):
+        image = load_image('asteroid.png')
+        meteor_image = pygame.transform.scale(image, (80, 80))
+
+        def __init__(self, *group):
+            super().__init__(*group)
+            self.image = Meteor.meteor_image
+            self.rect = self.image.get_rect()
+            self.mask = pygame.mask.from_surface(self.meteor_image)
+            self.rect.x, self.rect.y = random.randrange(720), 0
+
+        def update(self):
+            self.rect.y += V / FPS / 2
+            if not self.rect.colliderect(screen_rect):
+                self.kill()
 
 
-if __name__ == '__main__':
-    pygame.display.set_caption('Game')
+    class Heath:
+        def __init__(self):
+            self.font = pygame.font.Font(None, 30)
+            
+        def update(self, ship_hp):
+            text = self.font.render(f'Hp {ship_hp}', True, (100, 255, 100))
+            return text
+
+
     running, direction = True, 1
     clock = pygame.time.Clock()
     all_sprites = pygame.sprite.Group()
@@ -143,4 +141,41 @@ if __name__ == '__main__':
         all_sprites.draw(screen)
         clock.tick(FPS)
         pygame.display.flip()
+    end_screen()
+
+
+def start_screen():
+    running = True
+    font = pygame.font.Font(None, 50)
+    text = font.render('Добро пожаловать в игру!', True, (100, 255, 100))
+    while running:
+        screen.fill((0, 0, 0))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONUP:
+                running = False
+        screen.blit(text, (100, 50))
+        pygame.display.flip()
+    main_level()
+
+def end_screen():
+    screen = pygame.display.set_mode(size)
+    running = True
+    font = pygame.font.Font(None, 50)
+    text = font.render('Конец игры', True, (100, 255, 100))
+    while running:
+        screen.fill((0, 0, 0))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONUP:
+                running = False
+        screen.blit(text, (100, 50))
+        pygame.display.flip()
     pygame.quit()
+    
+
+if __name__ == '__main__':
+    pygame.display.set_caption('Game')
+    start_screen()

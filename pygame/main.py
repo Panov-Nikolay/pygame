@@ -27,7 +27,7 @@ def load_image(name, colorkey=None):
         image = image.convert_alpha()
     return image
 
-def main_level():
+def main_level(meteor_number=10):
     class Ship(pygame.sprite.Sprite):
         image = load_image('spaceship.png')
         ship_image = pygame.transform.scale(image, (125, 100))
@@ -112,6 +112,7 @@ def main_level():
     ship = Ship(all_sprites)
     hp_indicator = Heath()
     new_meteor = 0
+    meteor_count = 0
     bg = load_image('background.jpg')
     while running:
         screen.blit(bg, (0, 0))
@@ -129,8 +130,12 @@ def main_level():
             ship.rect.x += V / FPS * direction
         new_meteor += 1
         if new_meteor == 60:
-            new_meteor = 0
-            Meteor((meteor_group, all_sprites))
+            if meteor_count < meteor_number:
+                new_meteor = 0
+                Meteor((meteor_group, all_sprites))
+                meteor_count += 1
+        if len(meteor_group) == 0 and meteor_count != 0:
+            end_level()
         bullet_group.update()
         meteor_group.update()
         if ship.update():
@@ -174,7 +179,23 @@ def end_screen():
         screen.blit(text, (100, 50))
         pygame.display.flip()
     pygame.quit()
-    
+
+def end_level():
+    screen = pygame.display.set_mode(size)
+    running = True
+    font = pygame.font.Font(None, 50)
+    text = font.render('Конец уровня', True, (100, 255, 100))
+    while running:
+        screen.fill((0, 0, 0))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                break
+            if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONUP:
+                running = False
+        screen.blit(text, (100, 50))
+        pygame.display.flip()
+    main_level()
 
 if __name__ == '__main__':
     pygame.display.set_caption('Game')

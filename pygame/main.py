@@ -27,7 +27,7 @@ def load_image(name, colorkey=None):
         image = image.convert_alpha()
     return image
 
-def main_level(meteor_number=10):
+def first_level(level=None, meteor_number=5, meteor_speed=V, end=None):
     class Ship(pygame.sprite.Sprite):
         image = load_image('spaceship.png')
         ship_image = pygame.transform.scale(image, (125, 100))
@@ -90,7 +90,7 @@ def main_level(meteor_number=10):
             self.rect.x, self.rect.y = random.randrange(720), 0
 
         def update(self):
-            self.rect.y += V / FPS / 2
+            self.rect.y += meteor_speed / FPS / 2
             if not self.rect.colliderect(screen_rect):
                 self.kill()
 
@@ -135,7 +135,10 @@ def main_level(meteor_number=10):
                 Meteor((meteor_group, all_sprites))
                 meteor_count += 1
         if len(meteor_group) == 0 and meteor_count != 0:
-            end_level()
+            if end == None:
+                end_first_level('Конец первого уровня', level)
+            else:
+                end()
         bullet_group.update()
         meteor_group.update()
         if ship.update():
@@ -146,7 +149,14 @@ def main_level(meteor_number=10):
         all_sprites.draw(screen)
         clock.tick(FPS)
         pygame.display.flip()
-    end_screen()
+    pygame.quit()
+
+
+def second_level():
+    first_level(meteor_number=10, meteor_speed=500, level=second_level, end=end_second_level)
+
+def third_level():
+    first_level(meteor_number=50, meteor_speed=200, level=third_level, end=end_third_level)
 
 
 def start_screen():
@@ -157,12 +167,12 @@ def start_screen():
         screen.fill((0, 0, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                pygame.quit()
             if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONUP:
                 running = False
         screen.blit(text, (100, 50))
         pygame.display.flip()
-    main_level()
+    first_level()
 
 def end_screen():
     screen = pygame.display.set_mode(size)
@@ -180,11 +190,11 @@ def end_screen():
         pygame.display.flip()
     pygame.quit()
 
-def end_level():
+def end_first_level(text, level):
     screen = pygame.display.set_mode(size)
     running = True
     font = pygame.font.Font(None, 50)
-    text = font.render('Конец уровня', True, (100, 255, 100))
+    text = font.render(text, True, (100, 255, 100))
     while running:
         screen.fill((0, 0, 0))
         for event in pygame.event.get():
@@ -195,7 +205,20 @@ def end_level():
                 running = False
         screen.blit(text, (100, 50))
         pygame.display.flip()
-    main_level()
+    if level == None:
+        second_level()
+    else:
+        level()
+ 
+
+def end_second_level():
+    text = 'Конец второго уровня'
+    end_first_level(text, third_level)
+
+
+def end_third_level():
+    text = 'Конец третьего уровня'
+    end_first_level(text, end_screen)
 
 if __name__ == '__main__':
     pygame.display.set_caption('Game')

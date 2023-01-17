@@ -161,8 +161,12 @@ def third_level():
 
 def start_screen():
     running = True
-    font = pygame.font.Font(None, 50)
-    text = font.render('Добро пожаловать в игру!', True, (100, 255, 100))
+    font_welcome = pygame.font.Font(None, 50)
+    font_text = pygame.font.Font(None, 20)
+    welcome = font_welcome.render('Добро пожаловать в игру!', True, (100, 255, 100))
+    text = font_text.render('(для продолжения нажмите любую кнопку)', True, (100, 255, 100))
+    welcome_rect = welcome.get_rect()
+    text_rect = text.get_rect()
     while running:
         screen.fill((0, 0, 0))
         for event in pygame.event.get():
@@ -170,7 +174,9 @@ def start_screen():
                 pygame.quit()
             if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONUP:
                 running = False
-        screen.blit(text, (100, 50))
+        screen.blit(welcome, (width // 2 - welcome_rect.width // 2, height // 2 - welcome_rect.height // 2 - 10))
+        screen.blit(text, (width // 2 - text_rect.width // 2, height // 2 - text_rect.height // 2 + 20))
+
         pygame.display.flip()
     first_level()
 
@@ -179,6 +185,7 @@ def end_screen():
     running = True
     font = pygame.font.Font(None, 50)
     text = font.render('Конец игры', True, (100, 255, 100))
+    rect = text.get_rect()
     while running:
         screen.fill((0, 0, 0))
         for event in pygame.event.get():
@@ -186,7 +193,7 @@ def end_screen():
                 running = False
             if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONUP:
                 running = False
-        screen.blit(text, (100, 50))
+        screen.blit(text, (width // 2 - rect.width // 2, height // 2 - rect.height // 2))
         pygame.display.flip()
     pygame.quit()
 
@@ -195,6 +202,7 @@ def end_first_level(text, level):
     running = True
     font = pygame.font.Font(None, 50)
     text = font.render(text, True, (100, 255, 100))
+    rect = text.get_rect()
     while running:
         screen.fill((0, 0, 0))
         for event in pygame.event.get():
@@ -203,7 +211,7 @@ def end_first_level(text, level):
                 break
             if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONUP:
                 running = False
-        screen.blit(text, (100, 50))
+        screen.blit(text, (width // 2 - rect.width // 2, height // 2 - rect.height // 2))
         pygame.display.flip()
     if level == None:
         second_level()

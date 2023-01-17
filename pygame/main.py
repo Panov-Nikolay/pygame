@@ -134,7 +134,7 @@ def first_level(level=None, meteor_number=5, meteor_speed=V, end=None):
                 new_meteor = 0
                 Meteor((meteor_group, all_sprites))
                 meteor_count += 1
-        if len(meteor_group) == 0 and meteor_count != 0:
+        if len(meteor_group) == 0 and meteor_count == meteor_number:
             if end == None:
                 end_first_level('Конец первого уровня', level)
             else:

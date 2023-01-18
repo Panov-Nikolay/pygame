@@ -113,7 +113,7 @@ def first_level(level=None, meteor_number=5, meteor_speed=V, end=None):
     hp_indicator = Heath()
     new_meteor = 0
     meteor_count = 0
-    bg = load_image('background.jpg')
+    bg = load_image('background_in_game.jpg')
     while running:
         screen.blit(bg, (0, 0))
         for event in pygame.event.get():
@@ -147,6 +147,7 @@ def first_level(level=None, meteor_number=5, meteor_speed=V, end=None):
         else:
             screen.blit(hp_indicator.update(ship.hp), (0, 0))
         all_sprites.draw(screen)
+        
         clock.tick(FPS)
         pygame.display.flip()
     pygame.quit()
@@ -160,6 +161,7 @@ def third_level():
 
 
 def start_screen():
+    bg = load_image('background.jpg')
     running = True
     font_welcome = pygame.font.Font(None, 50)
     font_text = pygame.font.Font(None, 20)
@@ -174,6 +176,7 @@ def start_screen():
                 pygame.quit()
             if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONUP:
                 running = False
+        screen.blit(bg, (0, 0))
         screen.blit(welcome, (width // 2 - welcome_rect.width // 2, height // 2 - welcome_rect.height // 2 - 10))
         screen.blit(text, (width // 2 - text_rect.width // 2, height // 2 - text_rect.height // 2 + 20))
 
@@ -181,6 +184,7 @@ def start_screen():
     first_level()
 
 def end_screen():
+    bg = load_image('background.jpg')
     screen = pygame.display.set_mode(size)
     running = True
     font = pygame.font.Font(None, 50)
@@ -193,11 +197,13 @@ def end_screen():
                 running = False
             if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONUP:
                 running = False
+        screen.blit(bg, (0, 0))
         screen.blit(text, (width // 2 - rect.width // 2, height // 2 - rect.height // 2))
         pygame.display.flip()
     pygame.quit()
 
 def end_first_level(text, level):
+    bg = load_image('background.jpg')
     screen = pygame.display.set_mode(size)
     running = True
     font = pygame.font.Font(None, 50)
@@ -211,6 +217,7 @@ def end_first_level(text, level):
                 break
             if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONUP:
                 running = False
+        screen.blit(bg, (0, 0))
         screen.blit(text, (width // 2 - rect.width // 2, height // 2 - rect.height // 2))
         pygame.display.flip()
     if level == None:

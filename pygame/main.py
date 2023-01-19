@@ -82,14 +82,16 @@ def first_level(level=None, meteor_number=5, meteor_speed=V, end=None):
         image = load_image('asteroid.png')
         meteor_image = pygame.transform.scale(image, (80, 80))
 
-        def __init__(self, *group):
+        def __init__(self, *group, strafe):
             super().__init__(*group)
             self.image = Meteor.meteor_image
             self.rect = self.image.get_rect()
             self.mask = pygame.mask.from_surface(self.meteor_image)
             self.rect.x, self.rect.y = random.randrange(720), 0
+            self.strafe = strafe
 
         def update(self):
+            self.rect.x += self.strafe / FPS
             self.rect.y += meteor_speed / FPS / 2
             if not self.rect.colliderect(screen_rect):
                 self.kill()
@@ -132,7 +134,7 @@ def first_level(level=None, meteor_number=5, meteor_speed=V, end=None):
         if new_meteor == 60:
             if meteor_count < meteor_number:
                 new_meteor = 0
-                Meteor((meteor_group, all_sprites))
+                Meteor((meteor_group, all_sprites), strafe=random.choice([-60, -50, -40, 0, 40, 50, 60]))
                 meteor_count += 1
         if len(meteor_group) == 0 and meteor_count == meteor_number:
             if end == None:
@@ -146,18 +148,17 @@ def first_level(level=None, meteor_number=5, meteor_speed=V, end=None):
             running = False
         else:
             screen.blit(hp_indicator.update(ship.hp), (0, 0))
-        all_sprites.draw(screen)
-        
+        all_sprites.draw(screen)   
         clock.tick(FPS)
         pygame.display.flip()
     pygame.quit()
 
 
 def second_level():
-    first_level(meteor_number=10, meteor_speed=500, level=second_level, end=end_second_level)
+    first_level(meteor_number=20, meteor_speed=500, level=second_level, end=end_second_level)
 
 def third_level():
-    first_level(meteor_number=50, meteor_speed=200, level=third_level, end=end_third_level)
+    first_level(meteor_number=50, meteor_speed=400, level=third_level, end=end_third_level)
 
 
 def start_screen():
@@ -181,7 +182,7 @@ def start_screen():
         screen.blit(text, (width // 2 - text_rect.width // 2, height // 2 - text_rect.height // 2 + 20))
 
         pygame.display.flip()
-    first_level()
+    first_level(meteor_number=10, meteor_speed=250)
 
 def end_screen():
     bg = load_image('background.jpg')

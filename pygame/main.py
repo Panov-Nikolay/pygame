@@ -13,7 +13,7 @@ FPS = 60
 
 
 def load_image(name, colorkey=None):
-    fullname = os.path.join('pygame/data', name)
+    fullname = os.path.join('data', name)
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
@@ -102,6 +102,7 @@ def first_level(level=None, meteor_number=5, meteor_speed=V, end=None):
             self.font = pygame.font.Font(None, 30)
             
         def update(self, ship_hp):
+            pygame.init()
             text = self.font.render(f'Hp {ship_hp}', True, (100, 255, 100))
             return text
 
@@ -151,7 +152,7 @@ def first_level(level=None, meteor_number=5, meteor_speed=V, end=None):
         all_sprites.draw(screen)   
         clock.tick(FPS)
         pygame.display.flip()
-    pygame.quit()
+    end_screen()
 
 
 def second_level():
@@ -239,3 +240,4 @@ def end_third_level():
 if __name__ == '__main__':
     pygame.display.set_caption('Game')
     start_screen()
+    pygame.quit()

@@ -174,15 +174,15 @@ def start_screen():
         screen.fill((0, 0, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-            if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONUP:
                 running = False
+            if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONUP:
+                first_level(meteor_number=10, meteor_speed=250)
         screen.blit(bg, (0, 0))
         screen.blit(welcome, (width // 2 - welcome_rect.width // 2, height // 2 - welcome_rect.height // 2 - 10))
         screen.blit(text, (width // 2 - text_rect.width // 2, height // 2 - text_rect.height // 2 + 20))
 
         pygame.display.flip()
-    first_level(meteor_number=10, meteor_speed=250)
+    pygame.quit()
 
 def end_screen():
     bg = load_image('background.jpg')

@@ -666,5 +666,4 @@ def main():
 
 
 if __name__ == '__main__':
-    # start_screen()
-    win_screen(datetime.now().time())
+    start_screen()

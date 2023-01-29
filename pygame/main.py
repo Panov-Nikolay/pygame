@@ -270,6 +270,7 @@ def win_screen(time):
         pygame.display.flip()
     result_screen()
 
+
 def lose_screen():
     bg = load_image('background.jpg')
     screen = pygame.display.set_mode(size1)
